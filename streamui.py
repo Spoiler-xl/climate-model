@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import pickle  
 
-from scikitlearn.linear_model import LinearRegression
+
 
 # Load your trained model (assumes you saved it as 'model.pkl')
 with open('model.pkl', 'rb') as file:
