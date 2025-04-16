@@ -1,25 +1,22 @@
 import streamlit as st
 import urllib.request
-import gzip
 import joblib
 import numpy as np
 import os
 
 # --- Model Download URL ---
-MODEL_URL = "https://github.com/Spoiler-xl/climate-model/releases/download/V1.0/rf.pkl.gz"
-MODEL_FILE = "rf.pkl.gz"
+MODEL_URL = "https://github.com/Spoiler-xl/climate-model/releases/download/V1.0/rf_compressed.pkl"
+MODEL_FILE = "rf_compressed.pkl"
 
 # --- Load Model Function ---
 @st.cache_data
 def load_model():
-    # Download the model if it doesn't exist locally
     if not os.path.exists(MODEL_FILE):
         st.info("Model not found locally. Downloading...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_FILE)
 
     try:
-        with gzip.open(MODEL_FILE, "rb") as f:
-            model = joblib.load(f)
+        model = joblib.load(MODEL_FILE)
         st.success("Model loaded successfully.")
         return model
     except Exception as e:
@@ -28,42 +25,35 @@ def load_model():
 
 model = load_model()
 
-# --- Check model type to ensure it's a valid machine learning model ---
+# --- Check model type ---
 if model is not None:
     st.write(f"Model Type: {type(model)}")
-    # Debug: Check if it's an actual model with predict method
     if hasattr(model, 'predict'):
         st.write("Model is valid and has a 'predict' method.")
     else:
         st.error("The loaded model does not have a 'predict' method.")
 else:
-    st.stop()  # Stops further execution if the model is not loaded
+    st.stop()
 
 # --- Streamlit App UI ---
 st.title("🌦️ Climate Temperature Predictor")
 st.markdown("Enter climate parameters to predict the temperature (°C).")
 
 # --- Input fields for selected features ---
-humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0)
-dew_point = st.number_input("🌫️ Dew Point (°C)", min_value=-30.0, max_value=50.0, value=10.0)
-wind_speed = st.number_input("🌬️ Wind Speed (m/s)", min_value=0.0, max_value=30.0, value=3.0)
-solar_radiation = st.number_input("☀️ Solar Radiation (W/m²)", min_value=0.0, max_value=1200.0, value=500.0)
-pressure = st.number_input("📊 Pressure (hPa)", min_value=800.0, max_value=1100.0, value=1010.0)
+humidity = st.number_input("💧 Humidity (%)", 0.0, 100.0, 50.0)
+dew_point = st.number_input("🌫️ Dew Point (°C)", -30.0, 50.0, 10.0)
+wind_speed = st.number_input("🌬️ Wind Speed (m/s)", 0.0, 30.0, 3.0)
+solar_radiation = st.number_input("☀️ Solar Radiation (W/m²)", 0.0, 1200.0, 500.0)
+pressure = st.number_input("📊 Pressure (hPa)", 800.0, 1100.0, 1010.0)
 
-# --- Ensure proper shape for model prediction ---
+# --- Prediction ---
 if st.button("🔮 Predict Temperature"):
     try:
         input_data = np.array([[humidity, dew_point, wind_speed, solar_radiation, pressure]])
-
-        # Check the shape of input_data
         if input_data.shape[1] != 5:
-            st.error(f"Error: The input data should have 5 features. Current shape: {input_data.shape}")
+            st.error(f"Error: Input shape is incorrect: {input_data.shape}")
         else:
-            # Verify that model supports predict method
-            if hasattr(model, 'predict'):
-                prediction = model.predict(input_data)
-                st.success(f"🌡️ Predicted Temperature: **{prediction[0]:.2f}°C**")
-            else:
-                st.error("Error: Loaded model does not have a 'predict' method. Please check the model file.")
+            prediction = model.predict(input_data)
+            st.success(f"🌡️ Predicted Temperature: **{prediction[0]:.2f}°C**")
     except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
+        st.error(f"Prediction failed: {e}")
