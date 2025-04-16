@@ -12,16 +12,32 @@ MODEL_FILE = "rf.pkl.gz"
 # --- Load Model Function ---
 @st.cache_data
 def load_model():
+    # Download the model if it doesn't exist locally
     if not os.path.exists(MODEL_FILE):
+        st.info("Model not found locally. Downloading...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_FILE)
-    with gzip.open(MODEL_FILE, "rb") as f:
-        model = joblib.load(f)
-    return model
+
+    try:
+        with gzip.open(MODEL_FILE, "rb") as f:
+            model = joblib.load(f)
+        st.success("Model loaded successfully.")
+        return model
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
+        return None
 
 model = load_model()
 
 # --- Check model type to ensure it's a valid machine learning model ---
-st.write(f"Model Type: {type(model)}")
+if model is not None:
+    st.write(f"Model Type: {type(model)}")
+    # Debug: Check if it's an actual model with predict method
+    if hasattr(model, 'predict'):
+        st.write("Model is valid and has a 'predict' method.")
+    else:
+        st.error("The loaded model does not have a 'predict' method.")
+else:
+    st.stop()  # Stops further execution if the model is not loaded
 
 # --- Streamlit App UI ---
 st.title("🌦️ Climate Temperature Predictor")
@@ -50,4 +66,4 @@ if st.button("🔮 Predict Temperature"):
             else:
                 st.error("Error: Loaded model does not have a 'predict' method. Please check the model file.")
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"An error occurred during prediction: {e}")
