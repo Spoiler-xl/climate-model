@@ -6,8 +6,8 @@ import pickle
 
 
 # Load your trained model (assumes you saved it as 'model.pkl')
-with open('model.pkl', 'rb') as file:
-    model = pickle.load(file)
+with open('rf.pkl', 'rb') as file:
+    rf = pickle.load(file)
 
 # Streamlit UI
 st.title("🌦️ Climate Data Prediction App")
