@@ -5,7 +5,7 @@ import pickle
 import os
 
 
-MODEL_URL ="https://github.com/climate-model/releases/download/v1.0/rf.pkl"
+MODEL_URL ="https://github.com/Spoiler-xl/climate-model/releases/download/V1.0/rf.pkl"
 MODEL_FILE = "rf.pkl"
 
 @st.cache_data
