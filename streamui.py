@@ -12,7 +12,7 @@ MODEL_FILE = "rf.pkl"
 def load_model():
     if not os.path.exists(MODEL_FILE):
         urllib.request.urlretrieve(MODEL_URL, MODEL_FILE)
-    with gzip.open(MODEL_FILE, 'rb') as f:
+    with open(MODEL_FILE, 'rb') as f:
         model = pickle.load(f)
     return model
 
