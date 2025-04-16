@@ -20,15 +20,15 @@ def load_model():
 
 model = load_model()
 
-# --- UI Inputs for 5 Selected Features ---
-feature1 = st.number_input("Feature 1 (e.g., humidity)")
-feature2 = st.number_input("Feature 2 (e.g., dew point)")
-feature3 = st.number_input("Feature 3 (e.g., wind speed)")
-feature4 = st.number_input("Feature 4 (e.g., solar radiation)")
-feature5 = st.number_input("Feature 5 (e.g., pressure)")
+# --- Input fields for selected features ---
+humidity = st.number_input("💧 Humidity (%)", min_value=0.0, max_value=100.0, value=50.0)
+dew_point = st.number_input("🌫️ Dew Point (°C)", min_value=-30.0, max_value=50.0, value=10.0)
+wind_speed = st.number_input("🌬️ Wind Speed (m/s)", min_value=0.0, max_value=30.0, value=3.0)
+solar_radiation = st.number_input("☀️ Solar Radiation (W/m²)", min_value=0.0, max_value=1200.0, value=500.0)
+pressure = st.number_input("📊 Pressure (hPa)", min_value=800.0, max_value=1100.0, value=1010.0)
 
-# --- Predict Button ---
+# --- Prediction Button ---
 if st.button("🔮 Predict Temperature"):
-    input_data = np.array([[feature1, feature2, feature3, feature4, feature5]])
+    input_data = np.array([[humidity, dew_point, wind_speed, solar_radiation, pressure]])
     prediction = model.predict(input_data)
-    st.success(f"🌡️ Predicted Temperature: {prediction[0]:.2f}°C")
+    st.success(f"🌡️ Predicted Temperature: **{prediction[0]:.2f}°C**")
