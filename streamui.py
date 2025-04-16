@@ -9,13 +9,11 @@ MODEL_URL ="https://github.com/Spoiler-xl/climate-model/releases/download/V1.0/r
 MODEL_FILE = "rf.pkl"
 
 @st.cache_data
-def load_model():
-    if not os.path.exists(MODEL_FILE):
-        urllib.request.urlretrieve(MODEL_URL, MODEL_FILE)
-    with open(MODEL_FILE, 'rb') as f:
+ def load_model():
+    urllib.request.urlretrieve(MODEL_URL, MODEL_FILE)
+    with open(MODEL_FILE, "rb") as f:  # NOT gzip.open!
         model = pickle.load(f)
     return model
-
 model = load_model()
 # --- UI Inputs for 5 Selected Features ---
 feature1 = st.number_input("Feature 1 (e.g., humidity)")
