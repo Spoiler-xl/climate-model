@@ -1,6 +1,5 @@
 import streamlit as st
 import urllib.request
-import gzip
 import pickle
 import os
 
